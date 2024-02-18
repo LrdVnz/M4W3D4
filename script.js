@@ -67,7 +67,7 @@ let inputValue = undefined;
 let filter = undefined;
 
 let createFilter = (filter_name) => {
-  console.log('creating filter...')
+  console.log("creating filter...");
   filter = filter_name;
 };
 
@@ -90,24 +90,23 @@ let controlRows = () => {
 
   dataCopy.forEach((el) => {
     Object.values(el).forEach((value) => {
-      controlContent(el, value)
       if (typeof value != "string") {
         return;
       }
-      if (filter === undefined) {
-        if (value.toLowerCase().includes(inputValue) && !newData.includes(el)) {
-            newData.push(el);
+      if (filter) {
+        if (
+          el[filter].toLowerCase().includes(inputValue) &&
+          !newData.includes(el)
+        ) {
+          newData.push(el);
         }
-      } else {
-        if (el[filter].toLowerCase().includes(inputValue) && !newData.includes(el)) {
-            newData.push(el);
-        }
+      } else if (
+        value.toLowerCase().includes(inputValue) &&
+        !newData.includes(el)
+      ) {
+        newData.push(el);
       }
     });
   });
   cycleData(newData);
 };
-
-let controlContent = () => {
-
-}
