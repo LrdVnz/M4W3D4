@@ -13,17 +13,17 @@ https://jsonplaceholder.typicode.com/users
 
 /// Primo passaggio per prendere il database di utenti.
 
-///  ! Cercare come filtrare una lista di nodi usando come filtro le proprietà stesse dei nodi. 
-/// Per ora assegno una classe a ogni row per poter fare un querySelectorAll, soluzione più veloce. 
+///  ! Cercare come filtrare una lista di nodi usando come filtro le proprietà stesse dei nodi.
+/// Per ora assegno una classe a ogni row per poter fare un querySelectorAll, soluzione più veloce.
 
 let tableBody = document.getElementById("table-body");
-let dataCopy = undefined; 
+let dataCopy = undefined;
 
 window.onload = async () => {
   try {
     const result = await fetch("https://jsonplaceholder.typicode.com/users");
     const usersData = await result.json();
-    dataCopy = usersData; 
+    dataCopy = usersData;
     cycleData(usersData);
   } catch (error) {
     console.log(error);
@@ -41,7 +41,7 @@ window.onload = async () => {
           </tr>
 */
 let cycleData = (data) => {
-  tableBody.innerHTML = '';
+  tableBody.innerHTML = "";
   data.forEach((element, index) => {
     createUserRow(element, index);
   });
@@ -58,40 +58,56 @@ let createUserRow = ({ name, username, email }, index) => {
     `;
 };
 
+/* Filtrare in base all'input dato dall'utente.
+ */
 
-/* Filtrare in base all'input dato dall'utente. 
-*/
-
-let searchBtn = document.getElementById('search-btn');
+let searchBtn = document.getElementById("search-btn");
 let searchInput = document.getElementById("search-input");
-let inputValue = undefined; 
+let inputValue = undefined;
+let filter = undefined;
 
-searchBtn.addEventListener('click', (event) => {
-  controlInput()
-})
+let createFilter = (filter_name) => {
+  console.log('creating filter...')
+  filter = filter_name;
+};
+
+searchBtn.addEventListener("click", (event) => {
+  controlInput();
+});
 
 let controlInput = () => {
-  inputValue = searchInput.value.toLowerCase().trim(); 
-  controlRows()
-}
+  inputValue = searchInput.value.toLowerCase().trim();
+  controlRows();
+};
 
 let controlRows = () => {
-  if(inputValue === undefined) {
-    cycleData(dataCopy)
-    return
+  if (inputValue === undefined) {
+    cycleData(dataCopy);
+    return;
   }
-   let newData = []
-   dataCopy.forEach((el) => {
-     Object.values(el).forEach((value) => {
-       if (typeof value === 'object' || typeof value != 'string') {
-        return
-       } 
-        if (value.toLowerCase().includes(inputValue)) {
-          if (!newData.includes(el)) {
-          newData.push(el)
-          }
-       }
-     })
-   })
-  cycleData(newData)
+
+  let newData = [];
+
+  dataCopy.forEach((el) => {
+    Object.values(el).forEach((value) => {
+      controlContent(el, value)
+      if (typeof value != "string") {
+        return;
+      }
+      if (filter === undefined) {
+        if (value.toLowerCase().includes(inputValue) && !newData.includes(el)) {
+            newData.push(el);
+        }
+      } else {
+        if (el[filter].toLowerCase().includes(inputValue) && !newData.includes(el)) {
+            newData.push(el);
+        }
+      }
+    });
+  });
+  cycleData(newData);
+};
+
+let controlContent = () => {
+
 }
