@@ -17,13 +17,14 @@ https://jsonplaceholder.typicode.com/users
 /// Per ora assegno una classe a ogni row per poter fare un querySelectorAll, soluzione più veloce. 
 
 let tableBody = document.getElementById("table-body");
+let dataCopy = undefined; 
 
 window.onload = async () => {
   try {
     const result = await fetch("https://jsonplaceholder.typicode.com/users");
     const usersData = await result.json();
+    dataCopy = usersData; 
     cycleData(usersData);
-    getAllRows() 
   } catch (error) {
     console.log(error);
   }
@@ -40,6 +41,7 @@ window.onload = async () => {
           </tr>
 */
 let cycleData = (data) => {
+  tableBody.innerHTML = '';
   data.forEach((element, index) => {
     createUserRow(element, index);
   });
@@ -56,23 +58,40 @@ let createUserRow = ({ name, username, email }, index) => {
     `;
 };
 
-let searchInput = document.getElementById("search-input");
 
 /* Filtrare in base all'input dato dall'utente. 
-   
 */
 
-let cycleRows = (table_body) => {
-  table_body.forEach((element, index) => {
-    element.forEach((inner_el, inner_index) => {
-      console.log(inner_el);
-    });
-  });
-};
+let searchBtn = document.getElementById('search-btn');
+let searchInput = document.getElementById("search-input");
+let inputValue = undefined; 
 
-let getAllRows = () => {
-    let allRows = document.getElementsByClassName('table-row') /// una node Collection di tutti i rows creati. 
-    allRows[1].childNodes.forEach((dd) => {
-        console.log(dd) /// per ciclare sui nodi figli. ora ho bisogno di poter utilizzare innertext per filtrare dalla ricerca.
-    })
+searchBtn.addEventListener('click', (event) => {
+  controlInput()
+})
+
+let controlInput = () => {
+  inputValue = searchInput.value.toLowerCase().trim(); 
+  controlRows()
+}
+
+let controlRows = () => {
+  if(inputValue === undefined) {
+    cycleData(dataCopy)
+    return
+  }
+   let newData = []
+   dataCopy.forEach((el) => {
+     Object.values(el).forEach((value) => {
+       if (typeof value === 'object' || typeof value != 'string') {
+        return
+       } 
+        if (value.toLowerCase().includes(inputValue)) {
+          if (!newData.includes(el)) {
+          newData.push(el)
+          }
+       }
+     })
+   })
+  cycleData(newData)
 }
